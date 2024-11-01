@@ -1,28 +1,56 @@
 package com.parcialDesarrollo.api_mutante.Service;
 
-
-import com.parcialDesarrollo.api_mutante.DnaResult;
+import com.parcialDesarrollo.api_mutante.Entities.Dna;
+import com.parcialDesarrollo.api_mutante.dto.DnaRequest;
+import com.parcialDesarrollo.api_mutante.dto.DnaResult;
+import com.parcialDesarrollo.api_mutante.dto.StatsResponse;
+import com.parcialDesarrollo.api_mutante.Repository.DnaRepository;
 import com.parcialDesarrollo.api_mutante.Repository.MutantRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@Service
-@RequiredArgsConstructor
+import java.util.Arrays;
 
+@Service
 public class MutantService {
 
+    private final DnaRepository dnaRepository;
     private final MutantRepository mutantRepository;
 
-    public boolean isMutant(String[] dna){
-        boolean isMutant = verificarSecuencia(dna);
-
-        DnaResult result = new DnaResult(null, dna, isMutant);
-        mutantRepository.save(result);
-
-        return isMutant;
+    public MutantService(DnaRepository dnaRepository, MutantRepository mutantRepository) {
+        this.dnaRepository = dnaRepository;
+        this.mutantRepository = mutantRepository;
     }
 
-    private boolean verificarSecuencia(String[] dna){
+    public boolean isMutant(DnaRequest dnaRequest) {
+        String dnaString = String.join(",", dnaRequest.getDna());
+
+        // Verifica si el ADN ya existe
+        Dna existingDna = dnaRepository.findByDna(dnaString).orElse(null);
+        if (existingDna != null) {
+            return existingDna.isMutant();
+        }
+
+        // Verifica si el ADN es mutante
+        boolean isMutant = verificarSecuencia(dnaRequest.getDna());
+
+        // Crea un nuevo objeto Dna
+        Dna newDna = new Dna();
+        newDna.setDna(dnaString);
+        newDna.setMutant(isMutant);
+
+        // Guarda el nuevo ADN en la base de datos
+        dnaRepository.save(newDna);
+
+        // Crea un objeto DnaResult solo para la respuesta
+        DnaResult result = new DnaResult();
+        result.setMutant(isMutant);
+        result.setDnaSequences(Arrays.asList(dnaRequest.getDna()));
+
+        // Aquí puedes retornar el resultado o construir una respuesta
+        return isMutant; // Si deseas retornar el resultado, quizás deberías cambiar el tipo de retorno a DnaResult
+    }
+
+    private boolean verificarSecuencia(String[] dna) {
         int n = dna.length;
         int secuenciasEncontradas = 0;
 
@@ -55,5 +83,13 @@ public class MutantService {
         }
 
         return false;
+    }
+
+    public StatsResponse getStats() {
+        long countMutantDna = mutantRepository.countByIsMutantTrue();
+        long countHumanDna = mutantRepository.countByIsMutantFalse();
+        double ratio = (countHumanDna == 0) ? 0 : (double) countMutantDna / countHumanDna;
+
+        return new StatsResponse(countMutantDna, countHumanDna, ratio);
     }
 }

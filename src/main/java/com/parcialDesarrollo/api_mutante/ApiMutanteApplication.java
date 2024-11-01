@@ -7,7 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ApiMutanteApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ApiMutanteApplication.class, args);
-	}
 
+		SpringApplication.run(ApiMutanteApplication.class, args);
+		System.out.println("DETECTOR DE MUTANTES ACTIVADO");
+	}
 }
