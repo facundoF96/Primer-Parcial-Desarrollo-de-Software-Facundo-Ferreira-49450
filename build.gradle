@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.5'
 	id 'io.spring.dependency-management' version '1.1.6'
+	id 'jacoco'
 }
 
 group = 'com.parcialDesarrollo'
@@ -27,8 +28,31 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok:1.18.24'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.mockito:mockito-core:5.2.0'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+jacoco {
+	toolVersion = "0.8.8"
+}
+
+test {
+	useJUnitPlatform()
+	finalizedBy jacocoTestReport // Esto asegura que el reporte de cobertura de código se genere después de los tests.
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml { enabled true }
+		csv { enabled false }
+		html { enabled true }
+	}
+}
+

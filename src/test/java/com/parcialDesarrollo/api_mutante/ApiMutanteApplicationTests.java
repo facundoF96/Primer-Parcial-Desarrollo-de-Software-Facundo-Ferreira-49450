@@ -10,4 +10,9 @@ class ApiMutanteApplicationTests {
 	void contextLoads() {
 	}
 
+	@Test
+	void main() {
+		String[] args = {};
+		ApiMutanteApplication.main(args);
+	}
 }

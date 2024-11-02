@@ -23,4 +23,6 @@ public class Dna extends Base implements Serializable {
 
     @Column(name = "is_mutant", nullable = false)
     private boolean isMutant;
+
 }
+
