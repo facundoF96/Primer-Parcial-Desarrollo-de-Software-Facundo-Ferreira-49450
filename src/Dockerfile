@@ -1,23 +1,14 @@
-# Fase de construcción
-FROM alpine:3.17 as build
+FROM alpine:latest as build
 
-# Instalar JDK y bash
-RUN apk update && apk add --no-cache openjdk17 bash
+RUN apk update
+RUN apk add openjdk17
 
-WORKDIR /app
-
-# Copiar todo el código fuente
 COPY . .
+RUN chmod +x ./gradlew
+RUN ./gradlew bootJar --no-daemon
 
-# Dar permisos de ejecución al script de Gradle y construir la aplicación
-RUN chmod +x ./gradlew && ./gradlew bootJar --no-daemon
+FROM openjdk:17-alpine
+EXPOSE 9000
+COPY --from=build ./build/libs/*.jar ./app.jar
 
-# Fase de ejecución
-FROM openjdk:17-jdk-alpine
-EXPOSE 8080
-
-# Copiar el JAR generado desde la fase de construcción
-COPY --from=build /app/build/libs/*.jar app.jar
-
-# Comando para ejecutar la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]
