@@ -42,3 +42,5 @@ Aqui tiene unos ejemplos si desea testearlos
 Ademas de estas, es mas que bienvenido a probar sus propias cadenas
 
 Si usted desea consultar las Estadisticas debera realizar una solicitud tipo GET desde Postman utilizando la siguiente URL https://primer-parcial-desarrollo-de-software-782w.onrender.com/stats
+
+[Si desea ver los tests unitarios dirigirse a la carpeta tests]
