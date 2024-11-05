@@ -26,6 +26,12 @@ public class MutantService {
             throw new IllegalArgumentException("No puede ser nulo ni estar vacio");
         }
 
+        for (String row : dnaRequest.getDna()) {
+        if (!row.matches("[ACGT]+")) {
+            throw new IllegalArgumentException("El ADN solo puede contener las letras A, C, G y T");
+            }
+        }
+
         String dnaString = String.join(",", dnaRequest.getDna());
 
         Dna existingDna = dnaRepository.findByDna(dnaString).orElse(null);
